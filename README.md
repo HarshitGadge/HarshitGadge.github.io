@@ -9,7 +9,7 @@ A single static page that talks to my [agentic-rag-service](https://github.com/H
 - **Cited, not generated.** The public service runs in extractive mode: each line of the answer is a sentence lifted from a retrieved passage, with a badge linking to its source file on GitHub.
 - **Cold starts.** The service runs on a free instance that sleeps when idle. The page pings `/stats` on load and tells you when the server is waking up.
 
-**The booth** (`/booth/`): my projects as records on a turntable. Pick one from the crate and its liner notes show what it does, the number that backs it up, and the stack. It's silent, works on a phone, and deep-links to a record with `#<repo-name>`.
+**The booth** (`/booth/`): my projects as records on a turntable. Pick one from the crate and its liner notes show what it does, the number that backs it up, and the stack. The records are silent. Side B lists six songs I build to; each one loads Spotify's official embedded player only when a visitor picks it, and nothing plays until they press play. No audio is hosted here. It works on a phone, and deep-links to a record with `#<repo-name>`.
 
 One file per page, no build step, no dependencies. To point it at a local copy of the service, use `?api=http://localhost:8000` (the service must list the page's origin in `RAG_CORS_ORIGINS`).
 
