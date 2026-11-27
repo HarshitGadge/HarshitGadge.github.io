@@ -121,11 +121,60 @@ h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;letter-spacing:-1.2px;margi
 .np-spot:not(:empty){margin-top:12px}
 .np-spot iframe{display:block;width:100%;height:80px;border:0;border-radius:12px}
 
+/* ask the record: questions go to the RAG service, scoped to this project */
+.ask{margin-top:16px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px 18px 16px;border-left:3px solid var(--acc)}
+.ask-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ask h3{margin:0;font:600 16px var(--mono);word-break:break-word}
+.ask h3 span{color:var(--acc)}
+.ask-sub{color:var(--muted);font-size:14px;line-height:1.5;margin:8px 0 12px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:12px var(--mono);color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:3px 10px}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.pill.live i{background:#22c55e}
+.pill.waking i{background:#f0b429;animation:blink 1s ease-in-out infinite}
+.pill.down i{background:#ef4444}
+@keyframes blink{50%{opacity:.3}}
+.ask-form{display:flex;gap:8px}
+.ask-form input{flex:1;min-width:0;font:15px var(--sans);color:var(--text);background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:10px 12px}
+.ask-form input:focus{outline:none;border-color:var(--acc)}
+.ask-form input:disabled{opacity:.5}
+.ask-form .btn{border-radius:10px;padding:0 16px}
+.ask-form .btn:disabled{opacity:.5;cursor:default}
+.sq{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sq button{font:13px var(--sans);color:var(--muted);background:none;border:1px dashed var(--line2);border-radius:10px;padding:6px 10px;cursor:pointer;text-align:left}
+.sq button:hover{color:var(--text);border-color:var(--acc)}
+.wake{display:none;margin-top:12px;font:13px var(--mono);color:var(--muted)}
+.wake.show{display:block}
+.pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:14px}
+.st{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:11px var(--mono);color:var(--dim);min-width:0}
+.st b{display:block;color:var(--muted);font-weight:600;font-size:12px}
+.st .ms{display:block;min-height:15px;color:var(--text)}
+.st .bar{height:3px;border-radius:2px;background:var(--acc);width:0;margin-top:4px;transition:width .5s}
+.st.active{border-color:var(--acc)}
+.st.done{border-color:var(--line2)}
+@media (max-width:520px){.st{padding:5px}.st b{font-size:11px}}
+.card{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.meta{font:12px var(--mono);color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.meta b{color:var(--acc);font-weight:600}
+.answer{margin-top:10px}
+.ev{line-height:1.55;font-size:15px;margin:0 0 8px;padding-left:10px;border-left:2px solid var(--acc);animation:rise .4s both}
+.ev code{font:13px var(--mono);background:var(--line);border-radius:4px;padding:1px 4px}
+.ev pre{font:12.5px var(--mono);background:var(--line);border-radius:6px;padding:8px;overflow-x:auto;margin:4px 0}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}}
+.ref{display:inline-block;min-width:18px;text-align:center;font:700 11px var(--mono);color:#0b0d11;background:var(--acc);border-radius:9px;padding:1px 5px;cursor:pointer;border:0;vertical-align:1px}
+.honest{color:var(--dim);font-size:12.5px;line-height:1.5;margin:6px 0 10px}
+.cite{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid var(--line);border-radius:6px;transition:background .3s}
+.cite.flash{background:var(--line)}
+.cite .num{font:700 12px var(--mono);color:var(--acc)}
+.cite .src{font:12px var(--mono);color:var(--dim);display:flex;gap:10px;flex-wrap:wrap}
+.cite .snip{color:var(--muted);font-size:13.5px;line-height:1.5;margin-top:3px}
+.err{color:#ef4444}
+
 footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-family:var(--mono)}
 
 @media (prefers-reduced-motion: reduce){
   .record,.arm,.sleeve{transition:none}
   .playing .spin{animation:none}
+  .ev,.pill.waking i{animation:none}
 }
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
@@ -138,7 +187,7 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
   </div>
 
   <h1>The booth</h1>
-  <p class="sub">Each record is one of my projects. Pick one from the crate and it goes on the deck; the liner notes say what it does, the number that backs it up, and what it's built with. Each record also plays a song I build to as it goes on, through Spotify's own player; the sound switch turns that off.</p>
+  <p class="sub">Each record is one of my projects. Pick one from the crate and it goes on the deck; the liner notes say what it does, the number that backs it up, and what it's built with. Each record also plays a song I build to as it goes on, through Spotify's own player; the sound switch turns that off. Once a record is on, you can ask it a question: my RAG service searches that project's own docs and answers with every sentence cited.</p>
 
   <div class="stage">
     <div class="deck" id="deck" aria-hidden="true">
@@ -171,6 +220,28 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
     <div class="np-spot" id="spot"></div>
   </div>
 
+  <section class="ask" id="ask" hidden aria-labelledby="askH">
+    <div class="ask-top">
+      <h3 id="askH">Ask about <span id="askName"></span></h3>
+      <span class="pill" id="status"><i></i><span id="statusText">server not checked yet</span></span>
+    </div>
+    <p class="ask-sub" id="askSub"></p>
+    <form class="ask-form" id="askForm">
+      <label class="sr" for="q">Your question about this project</label>
+      <input id="q" type="text" maxlength="300" autocomplete="off" placeholder="Ask how it works, or why it was built that way">
+      <button class="btn" id="go" type="submit">Ask</button>
+    </form>
+    <div class="sq" id="sq"></div>
+    <div class="wake" id="wake">The server runs on a free plan and sleeps when nobody's asking, so this first answer can take about a minute.</div>
+    <div class="pipe" id="pipe" hidden></div>
+    <div class="card" id="card" hidden aria-live="polite">
+      <div class="meta"><b id="mode"></b><span id="meta"></span></div>
+      <div class="answer" id="answer"></div>
+      <p class="honest" id="honest"></p>
+      <div id="cites"></div>
+    </div>
+  </section>
+
   <div class="crate-h">
     <h3>The crate</h3>
     <small>← → to flip through</small>
@@ -179,6 +250,7 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
 
   <footer>
     Every number on these notes comes from a run in that project's repo. Songs play in Spotify's official embedded player, and nothing from Spotify loads until a record is on the deck. No audio is hosted here. Visitors who aren't signed in to Spotify hear a preview.
+    Questions go to <a href="https://github.com/HarshitGadge/agentic-rag-service">agentic-rag-service</a>, read-only, on a free Render instance. It only searches the project docs it has indexed, and answers by picking sentences from them.
     Source for this page: <a href="https://github.com/HarshitGadge/HarshitGadge.github.io">HarshitGadge.github.io</a>.
     Want to talk? <a href="mailto:harshit.gadge.1805@gmail.com?subject=Saw%20your%20booth">harshit.gadge.1805@gmail.com</a>
   </footer>
@@ -192,8 +264,7 @@ const RECORDS = [
   { slug:'agentic-rag-service', kicker:'RAG · evaluation', c:'#2dd4bf', art:'rings',
     what:'Query decomposition, hybrid search and cited answers, tuned against a real benchmark.',
     metric:'+5.0', label:'nDCG@10 on SciFact, 95% CI +3.1 to +6.9',
-    stack:['FastAPI','ChromaDB','ONNX','97 tests'],
-    extra:{ href:'../', text:'Ask it live' } },
+    stack:['FastAPI','ChromaDB','ONNX','97 tests'] },
   { slug:'capability-runtime', kicker:'Agentic AI', c:'#a78bfa', art:'steps',
     what:'An LLM learns a web workflow once; it then replays deterministically, with a human for risky steps.',
     metric:'0', label:'model calls per production replay',
@@ -276,6 +347,7 @@ function play(i, opts = {}){
     <div class="metric"><b>${esc(r.metric)}</b><span>${esc(r.label)}</span></div>
     <div class="chips">${r.stack.map(s => `<span>${esc(s)}</span>`).join('')}</div>
     <div class="links">${links.join('')}</div>`;
+  askFor(r);
   if (!opts.fromHash) history.replaceState(null, '', '#' + r.slug);
   if (opts.focus) document.getElementById('s-' + r.slug).focus();
 }
@@ -368,6 +440,170 @@ function setSound(on){
   }
 }
 $('#sound').addEventListener('click', () => setSound(!soundOn));
+
+// Ask the record. Questions go to agentic-rag-service's /query with
+// source_filter set to the record's repo name: the demo index gives each
+// project's docs their own source tag, so retrieval only searches that project.
+// ?api=<url> points the page at another deployment.
+const API = new URLSearchParams(location.search).get('api') || 'https://agentic-rag-service-fxsc.onrender.com';
+// Projects in the demo index (agentic-rag-service/demo/corpus). The live /stats
+// replaces this list once the server answers.
+const INDEXED = ['agentic-rag-service','capability-runtime','payments-data-platform','medicare-claims-analytics','kafka-databricks-nasa'];
+// Starter questions, each answered from that project's own docs.
+const STARTERS = {
+  'agentic-rag-service': ['Why is MMR off by default?'],
+  'capability-runtime': ['What happens when a replay reaches an irreversible step?', 'How much does discovering a capability cost?'],
+  'payments-data-platform': ['How does the pipeline ignore a stale, replayed CDC event?'],
+  'medicare-claims-analytics': ['How are hospital readmissions defined, and how are transfers handled?'],
+  'kafka-databricks-nasa': ['Why is the notice parser pure Python instead of Spark SQL?'],
+};
+const STAGES = [['plan','plan_ms'],['embed','embed_ms'],['search','search_ms'],['rank','rerank_ms'],['answer','generate_ms']];
+const srv = { live:false, counts:null, waking:null };
+let askRec = null, askSeq = 0, pipeTimer = 0, busy = false;
+
+function setStatus(kind, text){ $('#status').className = 'pill ' + kind; $('#statusText').textContent = text; }
+async function fetchJSON(url, opts = {}, ms = 95000){
+  const ac = new AbortController(); const h = setTimeout(() => ac.abort(), ms);
+  try { const r = await fetch(url, { ...opts, signal: ac.signal }); if (!r.ok) throw new Error(`HTTP ${r.status}`); return await r.json(); }
+  finally { clearTimeout(h); }
+}
+// Wake the free instance early, so it's up by the time someone asks.
+function wake(){
+  if (srv.waking) return srv.waking;
+  setStatus('waking', 'waking the server');
+  const slow = setTimeout(() => { if (!srv.live) setStatus('waking', 'free server waking up, about a minute'); }, 2500);
+  srv.waking = fetchJSON(API + '/stats').then(s => {
+    srv.live = true; srv.counts = s.sources || null;
+    setStatus('live', 'server live');
+    if (askRec) askFor(askRec, true);
+  }).catch(() => {
+    setStatus('down', 'server unreachable, try again in a minute');
+  }).finally(() => { clearTimeout(slow); srv.waking = null; });
+  return srv.waking;
+}
+// /stats counts passages per source tag; fall back to the list if its keys look different.
+const tagged = () => srv.counts && Object.keys(srv.counts).some(k => INDEXED.includes(k));
+const indexed = slug => tagged() ? slug in srv.counts : INDEXED.includes(slug);
+
+// Show the ask box for the record on the deck. keep=true only refreshes the
+// count and keeps any answer that's showing.
+function askFor(r, keep = false){
+  askRec = r;
+  const box = $('#ask'); box.hidden = false;
+  $('#askName').textContent = r.slug;
+  const on = indexed(r.slug);
+  const n = tagged() && srv.counts[r.slug];
+  $('#askSub').textContent = on
+    ? `Your question goes to my RAG service, which searches only this project's docs${n ? ` (${n} passages)` : ''} and answers with cited sentences.`
+    : "This record's docs aren't in the RAG service's index yet, so there's nothing to ask here. The liner notes and the repo have the details.";
+  $('#q').disabled = !on; $('#go').disabled = !on || busy;
+  $('#sq').replaceChildren(...(on ? STARTERS[r.slug] || [] : []).map(text => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = text;
+    b.addEventListener('click', () => { $('#q').value = text; ask(); });
+    return b;
+  }));
+  if (keep) return;
+  askSeq++; busy = false; $('#go').disabled = !on;   // drop any answer still on its way for the last record
+  clearInterval(pipeTimer);
+  $('#q').value = '';
+  $('#card').hidden = true; $('#pipe').hidden = true; $('#wake').classList.remove('show');
+}
+
+function buildPipe(){
+  $('#pipe').innerHTML = STAGES.map(([n]) => `<div class="st"><b>${n}</b><span class="ms"></span><div class="bar"></div></div>`).join('');
+  $('#pipe').hidden = false;
+  const st = [...document.querySelectorAll('.st')]; let k = 0;
+  clearInterval(pipeTimer);
+  pipeTimer = setInterval(() => { st.forEach((s, i) => s.classList.toggle('active', i === k % st.length)); k++; }, 420);
+}
+// The real per-stage times the server reports, as bars scaled to the slowest stage.
+function finishPipe(t){
+  clearInterval(pipeTimer);
+  const max = Math.max(...STAGES.map(([, key]) => t[key] || 0), 1);
+  document.querySelectorAll('.st').forEach((s, i) => {
+    const v = t[STAGES[i][1]] || 0;
+    s.className = 'st done';
+    s.querySelector('.ms').textContent = v < 1 ? '<1 ms' : `${v.toFixed(0)} ms`;
+    s.querySelector('.bar').style.width = Math.max(4, v / max * 100) + '%';
+  });
+}
+// Passages are markdown: keep the meaning, drop the syntax.
+function md(raw){
+  let t = esc(raw.replace(/\s+/g, ' ').trim());
+  t = t.replace(/(^|\s)#{1,6}\s+/g, '$1').replace(/^[-*]\s+/, '').replace(/;\s-\s/g, '; ');
+  return t.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+}
+// Each answer sentence ends with [n], the passage it was taken from.
+function answerHtml(ans, cites){
+  const text = ans.replace(/^Answer assembled directly from the retrieved passages[^\n]*\n+/, '');
+  const parts = text.split(/(\[\d+\])/), out = [];
+  for (let i = 0; i < parts.length; i += 2){
+    const body = parts[i] || '', ref = parts[i + 1];
+    if (!body.trim() && !ref) continue;
+    const n = ref ? +ref.slice(1, -1) : null;
+    const inner = /```/.test(body) ? `<pre>${esc(body.replace(/```[a-z]*\n?/g, '').trim())}</pre>` : md(body);
+    const badge = n && cites[n - 1] ? ` <button class="ref" type="button" data-n="${n}" aria-label="Source ${n}">${n}</button>` : '';
+    out.push(`<div class="ev" style="animation-delay:${out.length * 0.1}s">${inner}${badge}</div>`);
+  }
+  return out.join('');
+}
+// The corpus keeps each repo's README at the top and its docs/ files beside it.
+function githubUrl(src){
+  const m = /corpus\/([^/]+)\/(.+)$/.exec(src || ''); if (!m) return null;
+  const [, proj, file] = m, root = ['README.md', 'REPORT.md'].includes(file);
+  return `${GH}${proj}/blob/main/${root ? '' : 'docs/'}${file}`;
+}
+
+async function ask(){
+  const r = askRec, q = $('#q').value.trim();
+  if (!r || !q || busy || !indexed(r.slug)) return;
+  const seq = ++askSeq;
+  busy = true; $('#go').disabled = true;
+  $('#card').hidden = true; buildPipe();
+  const hint = setTimeout(() => { if (!srv.live) $('#wake').classList.add('show'); }, 3000);
+  const done = () => seq === askSeq;
+  try {
+    const t0 = performance.now();
+    const res = await fetchJSON(API + '/query', { method:'POST', headers:{ 'content-type':'application/json' },
+      body: JSON.stringify({ question: q, source_filter: r.slug }) });
+    const rtt = performance.now() - t0;
+    if (!srv.live) wake();
+    if (!done()) return;
+    $('#wake').classList.remove('show');
+    finishPipe(res.timings);
+    $('#mode').textContent = res.answer_mode === 'llm' ? 'answer, written by an LLM from these passages' : 'answer, picked from the passages';
+    $('#meta').textContent = `${res.citations.length} sources · server ${res.timings.total_ms.toFixed(0)} ms · round trip ${rtt.toFixed(0)} ms`;
+    $('#honest').textContent = res.answer_mode === 'llm' ? ''
+      : "Each line is a sentence taken word for word from this project's docs, and its number points to the passage below. Nothing here is generated.";
+    $('#answer').innerHTML = res.citations.length ? answerHtml(res.answer, res.citations)
+      : `<div class="ev">Nothing in this project's docs matched that question. Try asking it another way.</div>`;
+    $('#cites').innerHTML = res.citations.map((c, i) => {
+      const url = githubUrl(c.source), file = (c.source || '').split('/').pop();
+      return `<div class="cite" id="cite-${i + 1}"><div class="num">${i + 1}</div><div>
+        <div class="src">${url ? `<a href="${url}" target="_blank" rel="noopener">${esc(file)} ↗</a>` : esc(file)}<span>relevance ${c.score.toFixed(2)}</span></div>
+        <div class="snip">${md(c.snippet)}</div></div></div>`;
+    }).join('');
+    $('#card').hidden = false;
+  } catch (e) {
+    if (!done()) return;
+    clearInterval(pipeTimer); $('#pipe').hidden = true; $('#wake').classList.remove('show');
+    $('#mode').textContent = ''; $('#meta').textContent = ''; $('#honest').textContent = ''; $('#cites').innerHTML = '';
+    $('#answer').innerHTML = `<div class="err">Couldn't reach the service (${esc(e.name === 'AbortError' ? 'timed out' : e.message)}). It runs on a free instance, so give it a minute and try again.</div>`;
+    $('#card').hidden = false;
+    setStatus('down', 'server unreachable, try again in a minute');
+  } finally {
+    clearTimeout(hint);
+    if (done()){ busy = false; $('#go').disabled = !indexed(askRec.slug); }
+  }
+}
+$('#askForm').addEventListener('submit', e => { e.preventDefault(); ask(); });
+$('#answer').addEventListener('click', e => {
+  const b = e.target.closest('.ref'); if (!b) return;
+  const c = document.getElementById('cite-' + b.dataset.n); if (!c) return;
+  c.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  c.classList.add('flash'); setTimeout(() => c.classList.remove('flash'), 1400);
+});
+wake();
 
 setSound(soundOn);
 
