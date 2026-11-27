@@ -538,7 +538,9 @@ function finishPipe(t){
 }
 // Passages are markdown: keep the meaning, drop the syntax.
 function md(raw){
-  let t = esc(raw.replace(/\s+/g, ' ').trim());
+  // [text](url) and ![alt](url) keep only their words.
+  const words = raw.replace(/!?\[([^\]]*)\]\([^)\s]*\)/g, '$1');
+  let t = esc(words.replace(/\s+/g, ' ').trim());
   t = t.replace(/(^|\s)#{1,6}\s+/g, '$1').replace(/^[-*]\s+/, '').replace(/;\s-\s/g, '; ');
   return t.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
 }
