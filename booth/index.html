@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The booth · Harshit Gadge</title>
+<meta name="description" content="Harshit Gadge's projects as records on a turntable. Pick one and read its liner notes: what it does, the number that backs it up, and the stack.">
+<meta property="og:title" content="The booth · Harshit Gadge">
+<meta property="og:description" content="Six projects, six records. Pick one and read the liner notes.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23111'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f472b6'/%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%23111'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#07090e; --panel:#0e131b; --plinth:#131922; --plinth2:#1a212c; --line:#ffffff14; --line2:#ffffff2b;
+  --text:#e8eef5; --muted:#93a0b0; --dim:#5b6675; --vinyl:#0b0d11; --groove:#ffffff0d;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  --acc:#2dd4bf;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f6f7f9; --panel:#ffffff; --plinth:#e4e8ee; --plinth2:#d6dce4; --line:#0000001a; --line2:#00000026;
+    --text:#111827; --muted:#4b5563; --dim:#8a94a3; --vinyl:#15181e; --groove:#ffffff12;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;overflow-x:hidden}
+main{max-width:980px;margin:0 auto;padding:40px 18px 64px}
+a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.top b{color:var(--text);font-weight:600}
+h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;letter-spacing:-1.2px;margin:34px 0 10px;font-weight:800}
+.sub{color:var(--muted);font-size:16px;line-height:1.55;max-width:640px;margin:0 0 28px}
+
+/* deck + notes */
+.stage{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:760px){.stage{grid-template-columns:1fr}}
+
+.deck{position:relative;aspect-ratio:1.18/1;width:100%;max-width:420px;border-radius:18px;
+  background:linear-gradient(160deg,var(--plinth2),var(--plinth));border:1px solid var(--line2);
+  box-shadow:0 18px 40px #0000004d, inset 0 1px 0 #ffffff12}
+.platter{position:absolute;left:6%;top:8%;width:68%;aspect-ratio:1;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,#2a313c 0 3deg,#1d232c 3deg 6deg);
+  box-shadow:inset 0 0 0 3px #00000040, 0 4px 14px #00000059}
+.record{position:absolute;inset:4%;border-radius:50%;
+  background:
+    repeating-radial-gradient(circle,var(--vinyl) 0 2px,#1b1f27 2px 2.6px,var(--vinyl) 2.6px 4px);
+  box-shadow:0 0 0 1px #000, 0 2px 10px #00000080;
+  transform:translateX(-140%) rotate(0);opacity:0;transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.record::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 20deg,transparent 0 40deg,#ffffff14 55deg,transparent 70deg 220deg,#ffffff0f 235deg,transparent 250deg)}
+.record.on{transform:translateX(0);opacity:1}
+.spin{position:absolute;inset:0;border-radius:50%}
+.playing .spin{animation:spin 1.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.label{position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--acc);text-align:center;overflow:hidden}
+.label span{position:absolute;left:12%;right:12%;top:16%;font-family:var(--mono);font-size:clamp(7px,1.7vw,9.5px);font-weight:700;color:#0b0d11;line-height:1.15;word-break:break-word}
+.label::after{content:"";position:absolute;left:50%;top:50%;width:8%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:#d7dde5;box-shadow:0 0 0 2px #0000004d}
+
+.arm{position:absolute;right:9%;top:9%;width:5.5%;height:66%;transform-origin:50% 7%;transform:rotate(-28deg);
+  transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+.playing .arm{transform:rotate(-2deg)}
+.arm .base{position:absolute;left:50%;top:0;width:250%;aspect-ratio:1;transform:translate(-50%,-30%);border-radius:50%;
+  background:radial-gradient(circle,#c9d1dc 0 28%,#7f8a99 30% 60%,#4b5563 62%);box-shadow:0 2px 6px #00000066}
+.arm .rod{position:absolute;left:50%;top:4%;bottom:12%;width:22%;transform:translateX(-50%);border-radius:3px;
+  background:linear-gradient(90deg,#aeb7c3,#e5e9ee,#9aa4b1)}
+.arm .head{position:absolute;left:50%;bottom:0;width:160%;height:14%;transform:translateX(-62%) rotate(18deg);border-radius:4px;
+  background:linear-gradient(#e5e9ee,#9aa4b1);box-shadow:0 2px 4px #00000066}
+
+.controls{position:absolute;left:6%;right:6%;bottom:6%;display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.led{width:9px;height:9px;border-radius:50%;background:var(--dim);margin-right:auto}
+.playing .led{background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.btn{font:600 12px var(--mono);color:var(--text);background:var(--panel);border:1px solid var(--line2);border-radius:999px;
+  padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+.strobe{position:absolute;left:3.6%;top:5.6%;width:72.8%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,#ffffff1a 0 1.5deg,transparent 1.5deg 6deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 66%,#000 66.5% 69%,transparent 69.5%);
+          mask:radial-gradient(circle,transparent 0 66%,#000 66.5% 69%,transparent 69.5%)}
+
+.notes{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:22px 22px 20px;min-height:100%;
+  border-top:3px solid var(--acc)}
+.side{font:700 11px var(--mono);letter-spacing:1.4px;color:var(--acc);text-transform:uppercase}
+.notes h2{font:600 clamp(19px,3vw,24px) var(--mono);margin:8px 0 10px;word-break:break-word}
+.notes p{color:var(--muted);line-height:1.55;margin:0 0 16px;font-size:15px}
+.metric{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-bottom:14px}
+.metric b{font:800 clamp(30px,5vw,40px) var(--mono);color:var(--acc);letter-spacing:-1px}
+.metric span{color:var(--muted);font-size:14px;line-height:1.4;max-width:260px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.chips span{font:12px var(--mono);color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:4px 10px}
+.links{display:flex;gap:16px;flex-wrap:wrap;font-weight:600;font-size:14px}
+.empty p{margin:0}
+
+/* crate */
+.crate-h{display:flex;justify-content:space-between;align-items:baseline;margin:40px 0 12px;gap:12px;flex-wrap:wrap}
+.crate-h h3{margin:0;font-size:15px;font-family:var(--mono);color:var(--muted);font-weight:600}
+.crate-h small{color:var(--dim);font-size:12px;font-family:var(--mono)}
+.crate{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:760px){.crate{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px}
+  .crate li{flex:0 0 42%;scroll-snap-align:start}}
+.sleeve{display:block;width:100%;aspect-ratio:1;border-radius:6px;border:1px solid var(--line2);cursor:pointer;padding:0;position:relative;overflow:hidden;
+  background:var(--panel);transition:transform .25s, box-shadow .25s;text-align:left}
+.sleeve:hover{transform:translateY(-4px);box-shadow:0 10px 20px #00000040}
+.sleeve[aria-pressed="true"]{transform:translateY(-8px);box-shadow:0 0 0 2px var(--c),0 12px 24px #00000059}
+.sleeve .art{position:absolute;inset:0}
+.sleeve .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 9px;background:linear-gradient(transparent,#000000b3);color:#fff;
+  font:600 10.5px var(--mono);line-height:1.25;word-break:break-word}
+.sleeve .no{position:absolute;left:9px;top:8px;font:700 10px var(--mono);color:#fff;opacity:.85;letter-spacing:1px}
+
+footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-family:var(--mono)}
+
+@media (prefers-reduced-motion: reduce){
+  .record,.arm,.sleeve{transition:none}
+  .playing .spin{animation:none}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div><b>Harshit Gadge</b> · AI &amp; data engineer · <a href="https://github.com/HarshitGadge">github</a></div>
+    <a href="../">← ask my portfolio</a>
+  </div>
+
+  <h1>The booth</h1>
+  <p class="sub">Each record is one of my projects. Pick one from the crate and it goes on the deck; the liner notes say what it does, the number that backs it up, and what it's built with. No sound, just notes.</p>
+
+  <div class="stage">
+    <div class="deck" id="deck" aria-hidden="true">
+      <div class="platter">
+        <div class="record" id="record"><div class="spin"><div class="label" id="label"><span id="labelText"></span></div></div></div>
+      </div>
+      <div class="strobe"></div>
+      <div class="arm"><div class="rod"></div><div class="base"></div><div class="head"></div></div>
+      <div class="controls">
+        <span class="led"></span>
+        <button class="btn" id="prev" type="button" tabindex="-1">◀ prev</button>
+        <button class="btn" id="next" type="button" tabindex="-1">next ▶</button>
+      </div>
+    </div>
+
+    <article class="notes" id="notes" aria-live="polite">
+      <div class="empty">
+        <div class="side">Liner notes</div>
+        <h2>Nothing on the deck yet</h2>
+        <p>Pick a record from the crate below.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="crate-h">
+    <h3>The crate</h3>
+    <small>← → to flip through</small>
+  </div>
+  <ul class="crate" id="crate"></ul>
+
+  <footer>
+    Every number on these notes comes from a run in that project's repo.
+    Source for this page: <a href="https://github.com/HarshitGadge/HarshitGadge.github.io">HarshitGadge.github.io</a>.
+    Want to talk? <a href="mailto:harshit.gadge.1805@gmail.com?subject=Saw%20your%20booth">harshit.gadge.1805@gmail.com</a>
+  </footer>
+</main>
+
+<script>
+const GH = 'https://github.com/HarshitGadge/';
+// Facts are copied from scripts/build_assets.py (CARDS) in HarshitGadge/HarshitGadge,
+// which is checked against each repo's README. Keep the two in step.
+const RECORDS = [
+  { slug:'agentic-rag-service', kicker:'RAG · evaluation', c:'#2dd4bf', art:'rings',
+    what:'Query decomposition, hybrid search and cited answers, tuned against a real benchmark.',
+    metric:'+5.0', label:'nDCG@10 on SciFact, 95% CI +3.1 to +6.9',
+    stack:['FastAPI','ChromaDB','ONNX','97 tests'],
+    extra:{ href:'../', text:'Ask it live' } },
+  { slug:'capability-runtime', kicker:'Agentic AI', c:'#a78bfa', art:'steps',
+    what:'An LLM learns a web workflow once; it then replays deterministically, with a human for risky steps.',
+    metric:'0', label:'model calls per production replay',
+    stack:['TypeScript','Playwright','Claude','84 tests'] },
+  { slug:'payments-data-platform', kicker:'Data engineering', c:'#f0b429', art:'stripes',
+    what:'Postgres CDC into an Iceberg lakehouse with an idempotent, LSN-guarded MERGE, plus an FX warehouse.',
+    metric:'102', label:'tests, one named after each way CDC corrupts data',
+    stack:['Debezium','Kafka','Spark','Iceberg','dbt'] },
+  { slug:'medicare-claims-analytics', kicker:'Healthcare analytics', c:'#f472b6', art:'dots',
+    what:'dbt pipeline over 116k synthetic beneficiaries: PMPM, readmissions, a high-cost model.',
+    metric:'+6.7', label:"pts of next year's high-cost members found on a 5% list",
+    stack:['dbt','DuckDB','LightGBM','Streamlit'],
+    extra:{ href:'https://hgadge-medicare-claims.streamlit.app', text:'Open the dashboard' } },
+  { slug:'kafka-databricks-nasa', kicker:'Streaming', c:'#38bdf8', art:'burst',
+    what:"NASA's real-time gamma-ray burst alerts into a Unity Catalog medallion lakehouse.",
+    metric:'33', label:'tests: parser, Spark transforms, data model',
+    stack:['Kafka OAuth','Structured Streaming','Delta'] },
+  { slug:'fraud-screening', kicker:'Risk · fraud', c:'#fb7185', art:'grid',
+    what:'Rules vs. models for fake job posts under a fixed review budget, tested on unseen posters.',
+    metric:'77%', label:'of fraud caught reviewing the top 5% by risk',
+    stack:['DuckDB SQL','scikit-learn','LightGBM'] },
+];
+
+// Original sleeve art: one pattern per record, drawn from its colour.
+function art(kind, c){
+  const d = '#0b0d11';
+  switch(kind){
+    case 'rings': return `repeating-radial-gradient(circle at 70% 30%, ${c} 0 6px, ${d} 6px 14px)`;
+    case 'steps': return `linear-gradient(135deg, ${d} 0 20%, ${c} 20% 30%, ${d} 30% 45%, ${c} 45% 52%, ${d} 52% 66%, ${c} 66% 70%, ${d} 70%)`;
+    case 'stripes': return `repeating-linear-gradient(90deg, ${c} 0 8px, ${d} 8px 13px, ${c}99 13px 16px, ${d} 16px 24px)`;
+    case 'dots': return `radial-gradient(circle, ${c} 0 3.5px, transparent 4px) 0 0/16px 16px, ${d}`;
+    case 'burst': return `repeating-conic-gradient(from 0deg at 30% 70%, ${c} 0 6deg, ${d} 6deg 18deg)`;
+    case 'grid': return `linear-gradient(${c} 0 2px, transparent 2px) 0 0/20px 20px, linear-gradient(90deg, ${c} 0 2px, transparent 2px) 0 0/20px 20px, linear-gradient(45deg, ${d}, ${c}55)`;
+  }
+}
+
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current = -1, timer = 0;
+
+const crate = $('#crate');
+RECORDS.forEach((r, i) => {
+  const li = document.createElement('li');
+  li.innerHTML = `<button class="sleeve" type="button" id="s-${r.slug}" aria-pressed="false" style="--c:${r.c}"
+      aria-label="Play ${esc(r.slug)}: ${esc(r.metric)} ${esc(r.label)}">
+      <span class="art" style="background:${art(r.art, r.c)}"></span>
+      <span class="no">A${i+1}</span><span class="cap">${esc(r.slug)}</span></button>`;
+  li.firstElementChild.addEventListener('click', () => play(i));
+  crate.appendChild(li);
+});
+
+function play(i, opts = {}){
+  i = (i + RECORDS.length) % RECORDS.length;
+  if (i === current) return;
+  const r = RECORDS[i], deck = $('#deck'), rec = $('#record');
+  current = i;
+  document.documentElement.style.setProperty('--acc', r.c);
+  document.querySelectorAll('.sleeve').forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
+  clearTimeout(timer);
+  deck.classList.remove('playing');
+  rec.classList.remove('on');
+  const drop = () => {
+    $('#label').style.background = r.c;
+    $('#labelText').textContent = r.slug.replace(/-/g, ' ');
+    rec.classList.add('on');
+    timer = setTimeout(() => deck.classList.add('playing'), reduce ? 0 : 650);
+  };
+  reduce ? drop() : (timer = setTimeout(drop, 260));
+
+  const links = [`<a href="${GH}${r.slug}">Open the repo →</a>`];
+  if (r.extra) links.push(`<a href="${r.extra.href}">${esc(r.extra.text)} →</a>`);
+  $('#notes').innerHTML = `
+    <div class="side">Side A · ${i+1} of ${RECORDS.length} · ${esc(r.kicker)}</div>
+    <h2>${esc(r.slug)}</h2>
+    <p>${esc(r.what)}</p>
+    <div class="metric"><b>${esc(r.metric)}</b><span>${esc(r.label)}</span></div>
+    <div class="chips">${r.stack.map(s => `<span>${esc(s)}</span>`).join('')}</div>
+    <div class="links">${links.join('')}</div>`;
+  if (!opts.fromHash) history.replaceState(null, '', '#' + r.slug);
+  if (opts.focus) document.getElementById('s-' + r.slug).focus();
+}
+
+$('#prev').addEventListener('click', () => play(current - 1));
+$('#next').addEventListener('click', () => play(current + 1));
+crate.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+    e.preventDefault();
+    play((current < 0 ? 0 : current) + (e.key === 'ArrowRight' ? 1 : -1), { focus:true });
+  }
+});
+
+function fromHash(){
+  const i = RECORDS.findIndex(r => '#' + r.slug === location.hash);
+  if (i >= 0) play(i, { fromHash:true });
+}
+addEventListener('hashchange', fromHash);
+fromHash();
+</script>
+</body>
+</html>
