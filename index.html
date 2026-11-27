@@ -539,9 +539,16 @@ function md(raw){
 function answerHtml(ans, cites){
   const text = ans.replace(/^Answer assembled directly from the retrieved passages[^\n]*\n+/, '');
   const parts = text.split(/(\[\d+\])/), out = [];
+  // A picked "sentence" can be a scrap of a table row or an ASCII diagram,
+  // which reads as noise. Skip those lines; the passage is still listed below.
+  const scrap = b => (b.match(/\|/g) || []).length >= 2 || /[\u2500-\u257f\u25b2-\u25bc]/.test(b);
+  const keep = [];
+  for (let i = 0; i < parts.length; i += 2) keep.push(!scrap(parts[i] || ''));
+  const any = keep.some((k, j) => k && (parts[j * 2] || '').trim());
   for (let i = 0; i < parts.length; i += 2){
     const body = parts[i] || '', ref = parts[i + 1];
     if (!body.trim() && !ref) continue;
+    if (any && !keep[i / 2]) continue;
     const n = ref ? +ref.slice(1, -1) : null;
     const inner = /```/.test(body) ? `<pre>${esc(body.replace(/```[a-z]*\n?/g, '').trim())}</pre>` : md(body);
     const badge = n && cites[n - 1] ? ` <button class="ref" type="button" data-n="${n}" aria-label="Source ${n}">${n}</button>` : '';
