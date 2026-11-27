@@ -86,6 +86,7 @@ h1 .grad{background:linear-gradient(92deg,#fff 10%,var(--teal) 45%,var(--violet)
 #answer{font-size:16px;line-height:1.65;color:#d7e0ea;word-wrap:break-word}
 .ev{margin:0 0 10px;padding:8px 0 8px 14px;border-left:2px solid var(--c,var(--teal));opacity:0;transform:translateX(-6px);animation:evin .45s ease-out forwards}
 @keyframes evin{to{opacity:1;transform:none}}
+#answer b{color:#fff;font-weight:650}
 #answer pre{white-space:pre-wrap;background:#00000059;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;color:#cfe;margin:8px 0}
 #answer code{font-family:var(--mono);font-size:.88em;background:#ffffff12;border-radius:5px;padding:1px 5px}
 .ref{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;margin:0 2px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:700;color:#04110f;background:var(--c,var(--teal));cursor:pointer;vertical-align:1px;transition:transform .12s}
@@ -317,6 +318,13 @@ function finishPipe(t){
   st.forEach((s,i) => { const v = t[STAGES[i][1]] || 0; setTimeout(() => { s.className='stage done';
     s.querySelector('.ms').textContent = v < 1 ? '<1 ms' : `${v.toFixed(0)} ms`; s.querySelector('.bar').style.width = Math.max(4, v/max*100)+'%'; }, i*110); });
 }
+function md(raw){
+  // Passages are markdown: keep the meaning, drop the syntax.
+  let t = esc(raw.replace(/\s+/g,' ').trim());
+  t = t.replace(/(^|\s)#{1,6}\s+/g,'$1').replace(/^[-*]\s+/,'').replace(/;\s-\s/g,'; ');
+  t = t.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s.,;:)]|$)/g,'$1<i>$2</i>');
+  return t;
+}
 function render(ans, cits){
   // Extractive answers are sentences cut from markdown passages: split them at
   // their [n] markers and show each as its own line, coloured by its source.
@@ -327,7 +335,7 @@ function render(ans, cits){
     const c = sg.n ? cits[sg.n-1] : null; const col = c ? (PROJECTS[projectOf(c.source)]?.c || '#2dd4bf') : '#5b6675';
     const isCode = /```/.test(sg.body);
     let inner = isCode ? `<pre>${esc(sg.body.replace(/```[a-z]*\n?/g,'').trim())}</pre>`
-                       : esc(sg.body.replace(/\s+/g,' ').trim()).replace(/`([^`]+)`/g,'<code>$1</code>');
+                       : md(sg.body);
     const badge = c ? ` <span class="ref" data-n="${sg.n}" style="--c:${col}">${sg.n}</span>` : '';
     return `<div class="ev" style="--c:${col};animation-delay:${i*0.12}s">${inner}${badge}</div>`;
   }).join('');
