@@ -112,24 +112,7 @@ h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;letter-spacing:-1.2px;margi
   font:600 10.5px var(--mono);line-height:1.25;word-break:break-word}
 .sleeve .no{position:absolute;left:9px;top:8px;font:700 10px var(--mono);color:#fff;opacity:.85;letter-spacing:1px}
 
-/* side B: songs, as official Spotify players that load only on a click */
-.sideb-h{display:flex;justify-content:space-between;align-items:baseline;margin:44px 0 6px;gap:12px;flex-wrap:wrap}
-.sideb-h h3{margin:0;font-size:15px;font-family:var(--mono);color:var(--muted);font-weight:600}
-.sideb-p{color:var(--dim);font-size:13px;line-height:1.5;margin:0 0 14px;font-family:var(--mono)}
-.tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
-@media (max-width:760px){.tracks{grid-template-columns:minmax(0,1fr)}}
-.track{display:flex;align-items:center;gap:12px;width:100%;height:80px;padding:0 14px;border-radius:12px;cursor:pointer;
-  background:var(--panel);border:1px solid var(--line2);color:var(--text);text-align:left;font:inherit}
-.track:hover{border-color:var(--muted)}
-.track .disc{flex:0 0 40px;height:40px;border-radius:50%;background:radial-gradient(circle,#d7dde5 0 7%,var(--t) 8% 32%,#0b0d11 33% 100%);
-  box-shadow:inset 0 0 0 1px #ffffff1a}
-.track .t{min-width:0;display:flex;flex-direction:column;gap:3px}
-.track .t b{font:600 14px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.track .t span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.track .go{margin-left:auto;font:600 11px var(--mono);color:var(--dim);white-space:nowrap}
-.track[aria-pressed="true"]{border-color:var(--t);box-shadow:0 0 0 1px var(--t)}
-
-/* now playing: one shared Spotify player for the deck and side B */
+/* now playing: one Spotify player for the deck */
 .np{margin-top:22px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:14px 14px 14px 18px}
 .np-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .np-now{font-size:14px;color:var(--muted);min-width:0}
@@ -193,12 +176,6 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
     <small>← → to flip through</small>
   </div>
   <ul class="crate" id="crate"></ul>
-
-  <section aria-labelledby="sideb">
-    <div class="sideb-h"><h3 id="sideb">Side B · what I build to</h3></div>
-    <p class="sideb-p">Each song is paired with a record. Pick one and its record goes on the deck.</p>
-    <ul class="tracks" id="tracks"></ul>
-  </section>
 
   <footer>
     Every number on these notes comes from a run in that project's repo. Songs play in Spotify's official embedded player, and nothing from Spotify loads until a record is on the deck. No audio is hosted here. Visitors who aren't signed in to Spotify hear a preview.
@@ -307,12 +284,12 @@ function play(i, opts = {}){
 // title and artist. Each one is paired with the record of the same colour and
 // plays when that record goes on the deck.
 const SONGS = [
-  { id:'0ct6r3EGTcMLPtrXHDvVjc', rec:'kafka-databricks-nasa', title:'The Nights', by:'Avicii', c:'#38bdf8' },
-  { id:'45J4avUb9Ni0bnETYaYFVJ', rec:'medicare-claims-analytics', title:'luther', by:'Kendrick Lamar, SZA', c:'#f472b6' },
-  { id:'52dEZA0A4siRTuA4e8w3ll', rec:'capability-runtime', title:'Told You So', by:'Martin Garrix, Jex', c:'#a78bfa' },
-  { id:'4uUG5RXrOk84mYEfFvj3cK', rec:'agentic-rag-service', title:"I'm Good (Blue)", by:'David Guetta, Bebe Rexha', c:'#2dd4bf' },
-  { id:'4w9B0Sz0pZIrkjT9qYpre6', rec:'payments-data-platform', title:'Body Talk', by:'Dimitri Vegas & Like Mike, MOGUAI, Julian Perretta', c:'#f0b429' },
-  { id:'50yPAveJ176wLk73SsyV3g', rec:'fraud-screening', title:'LIGHTS GO OUT', by:'John Summit', c:'#fb7185' },
+  { id:'0ct6r3EGTcMLPtrXHDvVjc', rec:'kafka-databricks-nasa', title:'The Nights', by:'Avicii' },
+  { id:'45J4avUb9Ni0bnETYaYFVJ', rec:'medicare-claims-analytics', title:'luther', by:'Kendrick Lamar, SZA' },
+  { id:'52dEZA0A4siRTuA4e8w3ll', rec:'capability-runtime', title:'Told You So', by:'Martin Garrix, Jex' },
+  { id:'4uUG5RXrOk84mYEfFvj3cK', rec:'agentic-rag-service', title:"I'm Good (Blue)", by:'David Guetta, Bebe Rexha' },
+  { id:'4w9B0Sz0pZIrkjT9qYpre6', rec:'payments-data-platform', title:'Body Talk', by:'Dimitri Vegas & Like Mike, MOGUAI, Julian Perretta' },
+  { id:'50yPAveJ176wLk73SsyV3g', rec:'fraud-screening', title:'LIGHTS GO OUT', by:'John Summit' },
 ];
 const songFor = r => SONGS.find(s => s.rec === r.slug);
 
@@ -350,7 +327,6 @@ function plainPlayer(s){
 }
 function showSong(s, note = ''){
   $('#npText').innerHTML = `<b>${esc(s.title)}</b> · ${esc(s.by)}${note ? ' · ' + esc(note) : ''}`;
-  tracks.querySelectorAll('.track').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === s.id)));
 }
 // Load a song into the player, and start it when the visitor's click asked for sound.
 function cue(s, autoplay){
@@ -378,7 +354,7 @@ function stopSound(){
   if (ctl) ctl.pause();
   else if (usingFallback) $('#spot').replaceChildren();
 }
-function setSound(on, opts = {}){
+function setSound(on){
   soundOn = on;
   try { localStorage.setItem('booth-sound', on ? 'on' : 'off'); } catch (e) {}
   const b = $('#sound');
@@ -387,29 +363,12 @@ function setSound(on, opts = {}){
   if (!on) {
     stopSound();
     if (want) showSong(want.song, 'sound off');
-  } else if (current >= 0 && !opts.quiet) {
+  } else if (current >= 0) {
     cue(songFor(RECORDS[current]), true);
   }
 }
 $('#sound').addEventListener('click', () => setSound(!soundOn));
 
-const tracks = $('#tracks');
-SONGS.forEach(s => {
-  const i = RECORDS.findIndex(r => r.slug === s.rec);
-  const li = document.createElement('li');
-  const b = document.createElement('button');
-  b.className = 'track'; b.type = 'button'; b.dataset.id = s.id; b.style.setProperty('--t', s.c);
-  b.setAttribute('aria-pressed', 'false');
-  b.setAttribute('aria-label', `Play ${s.title} by ${s.by}, with the ${s.rec} record`);
-  b.innerHTML = `<span class="disc" aria-hidden="true"></span>
-    <span class="t"><b>${esc(s.title)}</b><span>${esc(s.by)}</span></span><span class="go">A${i + 1} · play</span>`;
-  b.addEventListener('click', () => {
-    if (!soundOn) setSound(true, { quiet: true });   // the click below starts the song
-    if (i === current) cue(s, true); else play(i);
-  });
-  li.appendChild(b);
-  tracks.appendChild(li);
-});
 setSound(soundOn);
 
 $('#prev').addEventListener('click', () => play(current - 1));
