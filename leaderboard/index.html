@@ -115,13 +115,14 @@ function comparisons(rows){
   return `<h2 id="comparisons">Paired comparisons</h2>
   <p class="note">Candidate minus baseline, scored on the same queries. A difference counts as significant when its 95% interval leaves out zero.</p>
   <div class="wrap"><table>
-    <thead><tr><th>Dataset</th><th>Candidate vs baseline</th><th>Metric</th><th class="num">Difference (95% CI)</th><th>Significant</th></tr></thead>
+    <thead><tr><th>Dataset</th><th>Candidate vs baseline</th><th>Metric</th><th class="num">Difference (95% CI)</th><th>Significant</th><th>Source</th></tr></thead>
     <tbody>${rows.map(c => `<tr>
       <td>${esc(name(c.dataset))}</td>
-      <td class="run">${esc(c.candidate)} <span class="no">vs</span> ${esc(c.baseline)}</td>
+      <td class="run">${link(c.file, `${esc(c.candidate)} <span class="no">vs</span> ${esc(c.baseline)}`)}</td>
       <td>${esc(METRICS[c.metric] || c.metric)}</td>
       <td class="num${c.diff < 0 && c.significant ? ' neg' : ''}">${signed(c.diff)}${sci(c.ci)}</td>
       <td class="${c.significant ? 'yes' : 'no'}">${c.significant ? 'yes' : 'no'}</td>
+      <td>${link(c.source?.ci_run, 'CI run')}</td>
     </tr>`).join('')}</tbody>
   </table></div>`;
 }
