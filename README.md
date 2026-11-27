@@ -10,6 +10,8 @@ My projects as records on a turntable. Pick one from the crate and it goes on th
 - **Real timings.** The five-stage strip (plan, embed, search, rank, answer) shows the per-stage milliseconds the service measured for that request.
 - **Cold starts.** The service runs on a free instance that sleeps when idle. The page pings `/stats` on load and says when the server is waking up.
 
+**RAGBench leaderboard.** [`/leaderboard/`](https://harshitgadge.github.io/leaderboard/) lists every RAGBench run by dataset, with nDCG@10, Recall@100 and their 95% bootstrap intervals, the paired comparisons, and faithfulness judges once they're published. It reads `leaderboard.json` from the [ragbench](https://github.com/HarshitGadge/ragbench) repo at page load, so a merged results PR there updates it, and every row links to the CI run behind it. The RAGBench record links to it.
+
 It works on a phone and in light mode, and deep-links to a record with `#<repo-name>`. The old `/booth/` address redirects here, keeping the record in the link.
 
-One file, no build step, no dependencies. To point it at a local copy of the service, use `?api=http://localhost:8000` (the service must list the page's origin in `RAG_CORS_ORIGINS`).
+Two pages, no build step, no dependencies. To point it at a local copy of the service, use `?api=http://localhost:8000` (the service must list the page's origin in `RAG_CORS_ORIGINS`).
