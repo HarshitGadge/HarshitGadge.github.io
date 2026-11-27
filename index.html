@@ -358,7 +358,7 @@ async function ask(){
     $('#honest').textContent = r.answer_mode === 'llm' ? '' : 'Extractive mode: these sentences are picked straight from the retrieved passages, so nothing here is generated or paraphrased. Each line is one sentence; its badge points to the source below.';
     $('#cites').innerHTML = r.citations.map((c,i) => { const p = PROJECTS[projectOf(c.source)] || {name:'source', c:'#8b97a6'}; const url = githubUrl(c.source);
       const file = (c.source||'').split('/').slice(-1)[0];
-      return `<div class="cite" id="cite-${i+1}" style="--c:${p.c}"><div class="num">${i+1}</div><div><div class="src"><b style="color:${p.c}">${esc(p.name)}</b> ${url?`<a href="${url}" target="_blank" rel="noopener">${esc(file)} ↗</a>`:esc(file)} <span>relevance ${c.score.toFixed(2)}</span></div><div class="snip">${esc(c.snippet)}</div></div></div>`; }).join('');
+      return `<div class="cite" id="cite-${i+1}" style="--c:${p.c}"><div class="num">${i+1}</div><div><div class="src"><b style="color:${p.c}">${esc(p.name)}</b> ${url?`<a href="${url}" target="_blank" rel="noopener">${esc(file)} ↗</a>`:esc(file)} <span>relevance ${c.score.toFixed(2)}</span></div><div class="snip">${md(c.snippet)}</div></div></div>`; }).join('');
     $('#dev').textContent = JSON.stringify(r, null, 2);
     sky.light(r.citations, card);
     $('#answer').innerHTML = render(r.answer, r.citations);
