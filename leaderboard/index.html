@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAGBench leaderboard · Harshit Gadge</title>
+<meta name="description" content="Retrievers scored by RAGBench on BEIR datasets, with bootstrap confidence intervals. Every number is read live from the ragbench repo.">
+<link rel="canonical" href="https://harshitgadge.github.io/leaderboard/">
+<style>
+:root{
+  --bg:#07090e; --panel:#0e131b; --plinth:#131922; --line:#ffffff14; --line2:#ffffff2b;
+  --text:#e8eef5; --muted:#93a0b0; --dim:#5b6675;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  --acc:#2dd4bf; --lime:#a3e635; --bad:#fb7185;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f6f7f9; --panel:#ffffff; --plinth:#e4e8ee; --line:#0000001a; --line2:#00000026;
+    --text:#111827; --muted:#4b5563; --dim:#8a94a3; --acc:#0f766e; --lime:#4d7c0f; --bad:#be123c;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+main{max-width:980px;margin:0 auto;padding:40px 16px 64px}
+a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.05;letter-spacing:-1px;margin:30px 0 10px;font-weight:800}
+.sub{color:var(--muted);font-size:16px;line-height:1.55;max-width:680px;margin:0 0 8px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin:0 0 28px}
+h2{font-size:20px;margin:36px 0 4px;letter-spacing:-.3px}
+h2 small{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+.note{color:var(--muted);font-size:14px;line-height:1.5;margin:4px 0 12px;max-width:700px}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.ci{color:var(--muted);font-size:12.5px;margin-left:6px}
+.run{font-family:var(--mono);font-size:13px}
+.best td:first-child .run{color:var(--lime);font-weight:700}
+.bar{position:relative;display:inline-block;width:110px;height:8px;border-radius:4px;background:var(--plinth);vertical-align:middle;margin-left:10px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--acc);opacity:.45}
+.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--acc)}
+.yes{color:var(--lime);font-weight:600} .no{color:var(--dim)} .neg{color:var(--bad)}
+.state{padding:18px;border:1px dashed var(--line2);border-radius:12px;color:var(--muted)}
+footer{margin-top:40px;color:var(--muted);font-size:13.5px;line-height:1.6}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span><a href="../">← the booth</a></span><span><a href="https://github.com/HarshitGadge/ragbench">ragbench on GitHub</a></span></div>
+  <h1>RAGBench leaderboard</h1>
+  <p class="sub">Retrievers scored by <a href="https://github.com/HarshitGadge/ragbench">RAGBench</a> on BEIR datasets. Each number is a mean over the dataset's test queries with a 95% bootstrap confidence interval, and each row links to the CI run that produced it.</p>
+  <p class="meta" id="meta">Loading the results…</p>
+  <div id="board"></div>
+  <footer>
+    This page reads <a id="src" href="https://github.com/HarshitGadge/ragbench/blob/main/leaderboard.json">leaderboard.json</a> from the ragbench repo when it loads, so it changes when a new results PR merges there. Nothing on it is typed in by hand.
+  </footer>
+</main>
+<script>
+const DATA = 'https://raw.githubusercontent.com/HarshitGadge/ragbench/main/leaderboard.json';
+const REPO = 'https://github.com/HarshitGadge/ragbench/';
+const NAMES = { arguana:'ArguAna', nfcorpus:'NFCorpus', scifact:'SciFact' };
+const METRICS = { 'ndcg@10':'nDCG@10', 'mrr@10':'MRR@10', 'recall@10':'Recall@10', 'recall@100':'Recall@100' };
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Only link to the ragbench repo itself.
+const safe = u => typeof u === 'string' && u.startsWith(REPO) ? u : null;
+const link = (u, text) => safe(u) ? `<a href="${esc(u)}">${text}</a>` : text;
+const f4 = x => typeof x === 'number' ? x.toFixed(4) : '–';
+const signed = x => typeof x === 'number' ? (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(4) : '–';
+const name = d => NAMES[d] || d;
+const ci = c => Array.isArray(c) && c.length === 2 ? `<span class="ci">${f4(c[0])} to ${f4(c[1])}</span>` : '';
+const sci = c => Array.isArray(c) && c.length === 2 ? `<span class="ci">${signed(c[0])} to ${signed(c[1])}</span>` : '';
+function bar(m){
+  if (!m || !Array.isArray(m.ci)) return '';
+  const pct = x => Math.max(0, Math.min(100, x * 100)).toFixed(1);
+  return `<span class="bar" aria-hidden="true"><i style="left:${pct(m.ci[0])}%;width:${(pct(m.ci[1]) - pct(m.ci[0])).toFixed(1)}%"></i><b style="left:${pct(m.mean)}%"></b></span>`;
+}
+const ms = x => typeof x !== 'number' ? '–' : x >= 100 ? Math.round(x).toLocaleString('en-US') : x.toFixed(x >= 10 ? 1 : 2);
+
+function byDataset(rows){
+  const out = new Map();
+  for (const r of rows) { if (!out.has(r.dataset)) out.set(r.dataset, []); out.get(r.dataset).push(r); }
+  return out;
+}
+
+function retrieval(rows){
+  return [...byDataset(rows)].map(([ds, rs]) => {
+    const top = Math.max(...rs.map(r => r.metrics?.['ndcg@10']?.mean ?? -1));
+    const q = rs[0].queries, docs = rs[0].documents;
+    return `<h2 id="${esc(ds)}">${esc(name(ds))}<small>${esc(q?.toLocaleString('en-US'))} queries · ${esc(docs?.toLocaleString('en-US'))} documents</small></h2>
+    <div class="wrap"><table>
+      <thead><tr><th>Run</th><th class="num">nDCG@10 (95% CI)</th><th class="num">Recall@100 (95% CI)</th><th class="num">p50 ms / query</th><th>Source</th></tr></thead>
+      <tbody>${rs.map(r => {
+        const n = r.metrics?.['ndcg@10'], rc = r.metrics?.['recall@100'];
+        const best = n && n.mean === top ? ' class="best"' : '';
+        return `<tr${best}>
+          <td><span class="run">${link(r.file, esc(r.run))}</span></td>
+          <td class="num">${f4(n?.mean)}${ci(n?.ci)}${bar(n)}</td>
+          <td class="num">${f4(rc?.mean)}${ci(rc?.ci)}</td>
+          <td class="num">${ms(r.latency_ms_p50)}</td>
+          <td>${link(r.source?.ci_run, 'CI run')}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  }).join('');
+}
+
+function comparisons(rows){
+  if (!rows.length) return '';
+  return `<h2 id="comparisons">Paired comparisons</h2>
+  <p class="note">Candidate minus baseline, scored on the same queries. A difference counts as significant when its 95% interval leaves out zero.</p>
+  <div class="wrap"><table>
+    <thead><tr><th>Dataset</th><th>Candidate vs baseline</th><th>Metric</th><th class="num">Difference (95% CI)</th><th>Significant</th></tr></thead>
+    <tbody>${rows.map(c => `<tr>
+      <td>${esc(name(c.dataset))}</td>
+      <td class="run">${esc(c.candidate)} <span class="no">vs</span> ${esc(c.baseline)}</td>
+      <td>${esc(METRICS[c.metric] || c.metric)}</td>
+      <td class="num${c.diff < 0 && c.significant ? ' neg' : ''}">${signed(c.diff)}${sci(c.ci)}</td>
+      <td class="${c.significant ? 'yes' : 'no'}">${c.significant ? 'yes' : 'no'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function faithfulness(rows){
+  if (!rows.length) return `<h2 id="faithfulness">Faithfulness judges</h2>
+    <p class="state">No faithfulness results have been published yet. This section fills in when they land in the repo.</p>`;
+  return `<h2 id="faithfulness">Faithfulness judges</h2>
+  <p class="note">How often each judge's verdict matches human labels on the same answers.</p>
+  <div class="wrap"><table>
+    <thead><tr><th>Judge</th><th class="num">Answers scored</th><th class="num">Faithfulness (95% CI)</th><th class="num">Accuracy vs labels</th><th class="num">AUC</th><th>Source</th></tr></thead>
+    <tbody>${rows.map(r => {
+      const a = r.agreement || {};
+      return `<tr>
+        <td class="run">${link(r.file, esc(r.judge))}</td>
+        <td class="num">${esc(r.scored ?? '–')}${r.answers != null ? `<span class="ci">of ${esc(r.answers)}</span>` : ''}</td>
+        <td class="num">${f4(r.faithfulness?.mean)}${ci(r.faithfulness?.ci)}</td>
+        <td class="num">${f4(a.accuracy_all_supported)}${a.labelled != null ? `<span class="ci">${esc(a.labelled)} labelled</span>` : ''}</td>
+        <td class="num">${f4(a.auc_faithfulness)}</td>
+        <td>${link(r.source?.ci_run, 'CI run')}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+async function load(){
+  const meta = document.getElementById('meta'), board = document.getElementById('board');
+  try {
+    const res = await fetch(DATA, { cache:'no-cache' });
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json();
+    if (d.schema !== 'ragbench.leaderboard/1') throw new Error('schema');
+    const rows = d.retrieval || [];
+    const dates = rows.map(r => r.source?.created).filter(Boolean).sort();
+    const versions = [...new Set(rows.map(r => r.source?.ragbench).filter(Boolean))];
+    meta.textContent = `${rows.length} runs on ${byDataset(rows).size} datasets` +
+      (versions.length ? ` · ragbench ${versions.join(', ')}` : '') +
+      (dates.length ? ` · latest run ${dates.at(-1).slice(0, 10)}` : '');
+    board.innerHTML = retrieval(rows) + comparisons(d.comparisons || []) + faithfulness(d.faithfulness || []);
+    try { if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView(); } catch {}
+  } catch (e) {
+    meta.textContent = '';
+    board.innerHTML = `<p class="state">The results couldn't be loaded just now. They're in <a href="https://github.com/HarshitGadge/ragbench/tree/main/results">the ragbench repo's results folder</a>.</p>`;
+  }
+}
+load();
+</script>
+</body>
+</html>
