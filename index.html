@@ -464,7 +464,7 @@ const STARTERS = {
   'payments-data-platform': ['How does the pipeline ignore a stale, replayed CDC event?'],
   'medicare-claims-analytics': ['How are hospital readmissions defined, and how are transfers handled?'],
   'kafka-databricks-nasa': ['Why is the notice parser pure Python instead of Spark SQL?'],
-  'ragbench': ['How does compare decide whether a change is real?'],
+  'ragbench': ['What does a retriever need to plug in?'],
 };
 const STAGES = [['plan','plan_ms'],['embed','embed_ms'],['search','search_ms'],['rank','rerank_ms'],['answer','generate_ms']];
 const srv = { live:false, counts:null, waking:null };
@@ -548,9 +548,20 @@ function answerHtml(ans, cites){
   const parts = text.split(/(\[\d+\])/), out = [];
   // A picked "sentence" can be a scrap of a table row or an ASCII diagram,
   // which reads as noise. Skip those lines; the passage is still listed below.
-  const scrap = b => (b.match(/\|/g) || []).length >= 2 || /[\u2500-\u257f\u25b2-\u25bc]/.test(b);
-  const keep = [];
-  for (let i = 0; i < parts.length; i += 2) keep.push(!scrap(parts[i] || ''));
+  // Also skip a line that is only headings around a code block, and a line
+  // that repeats the tail of one already shown (chunks overlap at their edges).
+  const headingsOnly = b => { const ls = b.replace(/```[\s\S]*?```/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+    return ls.length > 0 && ls.every(l => l.startsWith('#')); };
+  const flat = b => b.replace(/[`*_#]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const scrap = b => (b.match(/\|/g) || []).length >= 2 || /[\u2500-\u257f\u25b2-\u25bc]/.test(b) || headingsOnly(b);
+  const keep = [], seen = [];
+  for (let i = 0; i < parts.length; i += 2){
+    const b = parts[i] || '', f = flat(b);
+    const repeat = f.length > 0 && seen.some(t => t.includes(f));
+    const k = !scrap(b) && !repeat;
+    keep.push(k);
+    if (k && f) seen.push(f);
+  }
   const any = keep.some((k, j) => k && (parts[j * 2] || '').trim());
   for (let i = 0; i < parts.length; i += 2){
     const body = parts[i] || '', ref = parts[i + 1];
@@ -563,10 +574,10 @@ function answerHtml(ans, cites){
   }
   return out.join('');
 }
-// The corpus keeps each repo's README at the top and its docs/ files beside it.
+// The corpus keeps each repo's top-level files (README, REPORT, CHANGELOG) and its docs/ files side by side.
 function githubUrl(src){
   const m = /corpus\/([^/]+)\/(.+)$/.exec(src || ''); if (!m) return null;
-  const [, proj, file] = m, root = ['README.md', 'REPORT.md'].includes(file);
+  const [, proj, file] = m, root = ['README.md', 'REPORT.md', 'CHANGELOG.md'].includes(file);
   return `${GH}${proj}/blob/main/${root ? '' : 'docs/'}${file}`;
 }
 
