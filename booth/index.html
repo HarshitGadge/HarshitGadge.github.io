@@ -112,6 +112,23 @@ h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;letter-spacing:-1.2px;margi
   font:600 10.5px var(--mono);line-height:1.25;word-break:break-word}
 .sleeve .no{position:absolute;left:9px;top:8px;font:700 10px var(--mono);color:#fff;opacity:.85;letter-spacing:1px}
 
+/* side B: songs, as official Spotify players that load only on a click */
+.sideb-h{display:flex;justify-content:space-between;align-items:baseline;margin:44px 0 6px;gap:12px;flex-wrap:wrap}
+.sideb-h h3{margin:0;font-size:15px;font-family:var(--mono);color:var(--muted);font-weight:600}
+.sideb-p{color:var(--dim);font-size:13px;line-height:1.5;margin:0 0 14px;font-family:var(--mono)}
+.tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
+@media (max-width:760px){.tracks{grid-template-columns:minmax(0,1fr)}}
+.track{display:flex;align-items:center;gap:12px;width:100%;height:80px;padding:0 14px;border-radius:12px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line2);color:var(--text);text-align:left;font:inherit}
+.track:hover{border-color:var(--muted)}
+.track .disc{flex:0 0 40px;height:40px;border-radius:50%;background:radial-gradient(circle,#d7dde5 0 7%,var(--t) 8% 32%,#0b0d11 33% 100%);
+  box-shadow:inset 0 0 0 1px #ffffff1a}
+.track .t{min-width:0;display:flex;flex-direction:column;gap:3px}
+.track .t b{font:600 14px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track .t span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track .go{margin-left:auto;font:600 11px var(--mono);color:var(--dim);white-space:nowrap}
+.tracks iframe{display:block;width:100%;height:80px;border:0;border-radius:12px}
+
 footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-family:var(--mono)}
 
 @media (prefers-reduced-motion: reduce){
@@ -129,7 +146,7 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
   </div>
 
   <h1>The booth</h1>
-  <p class="sub">Each record is one of my projects. Pick one from the crate and it goes on the deck; the liner notes say what it does, the number that backs it up, and what it's built with. No sound, just notes.</p>
+  <p class="sub">Each record is one of my projects. Pick one from the crate and it goes on the deck; the liner notes say what it does, the number that backs it up, and what it's built with. The records are silent; Side B, below, has the songs I build to.</p>
 
   <div class="stage">
     <div class="deck" id="deck" aria-hidden="true">
@@ -160,8 +177,14 @@ footer{margin-top:44px;color:var(--dim);font-size:13px;line-height:1.6;font-fami
   </div>
   <ul class="crate" id="crate"></ul>
 
+  <section aria-labelledby="sideb">
+    <div class="sideb-h"><h3 id="sideb">Side B · what I build to</h3></div>
+    <p class="sideb-p">Pick a song to load Spotify's own player. Nothing loads or plays until you do, and it plays only when you press play in the player.</p>
+    <ul class="tracks" id="tracks"></ul>
+  </section>
+
   <footer>
-    Every number on these notes comes from a run in that project's repo.
+    Every number on these notes comes from a run in that project's repo. Side B uses Spotify's official embedded player; no audio is hosted here.
     Source for this page: <a href="https://github.com/HarshitGadge/HarshitGadge.github.io">HarshitGadge.github.io</a>.
     Want to talk? <a href="mailto:harshit.gadge.1805@gmail.com?subject=Saw%20your%20booth">harshit.gadge.1805@gmail.com</a>
   </footer>
@@ -259,6 +282,46 @@ function play(i, opts = {}){
   if (!opts.fromHash) history.replaceState(null, '', '#' + r.slug);
   if (opts.focus) document.getElementById('s-' + r.slug).focus();
 }
+
+// Side B. The ids are each song's own page on open.spotify.com, checked by
+// title and artist. One player at a time; the rest stay as plain buttons.
+const SONGS = [
+  { id:'0ct6r3EGTcMLPtrXHDvVjc', title:'The Nights', by:'Avicii', c:'#38bdf8' },
+  { id:'45J4avUb9Ni0bnETYaYFVJ', title:'luther', by:'Kendrick Lamar, SZA', c:'#f472b6' },
+  { id:'52dEZA0A4siRTuA4e8w3ll', title:'Told You So', by:'Martin Garrix, Jex', c:'#a78bfa' },
+  { id:'4uUG5RXrOk84mYEfFvj3cK', title:"I'm Good (Blue)", by:'David Guetta, Bebe Rexha', c:'#2dd4bf' },
+  { id:'4w9B0Sz0pZIrkjT9qYpre6', title:'Body Talk', by:'Dimitri Vegas & Like Mike, MOGUAI, Julian Perretta', c:'#f0b429' },
+  { id:'50yPAveJ176wLk73SsyV3g', title:'LIGHTS GO OUT', by:'John Summit', c:'#fb7185' },
+];
+const tracks = $('#tracks');
+function songButton(s){
+  const b = document.createElement('button');
+  b.className = 'track'; b.type = 'button'; b.style.setProperty('--t', s.c);
+  b.setAttribute('aria-label', `Load the Spotify player for ${s.title} by ${s.by}`);
+  b.innerHTML = `<span class="disc" aria-hidden="true"></span>
+    <span class="t"><b>${esc(s.title)}</b><span>${esc(s.by)}</span></span><span class="go">load player</span>`;
+  b.addEventListener('click', () => loadSong(b.parentElement, s));
+  return b;
+}
+function loadSong(li, s){
+  // put any open player back to its button, so only one can play
+  tracks.querySelectorAll('iframe').forEach(f => {
+    const other = SONGS.find(x => x.id === f.dataset.id);
+    f.parentElement.replaceChildren(songButton(other));
+  });
+  const f = document.createElement('iframe');
+  f.src = `https://open.spotify.com/embed/track/${s.id}?utm_source=generator`;
+  f.title = `Spotify player: ${s.title} by ${s.by}`;
+  f.dataset.id = s.id;
+  f.allow = 'encrypted-media; clipboard-write; fullscreen; picture-in-picture';
+  f.loading = 'lazy';
+  li.replaceChildren(f);
+}
+SONGS.forEach(s => {
+  const li = document.createElement('li');
+  li.appendChild(songButton(s));
+  tracks.appendChild(li);
+});
 
 $('#prev').addEventListener('click', () => play(current - 1));
 $('#next').addEventListener('click', () => play(current + 1));
