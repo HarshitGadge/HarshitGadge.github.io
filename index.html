@@ -6,7 +6,7 @@
 <title>Harshit Gadge · the booth</title>
 <meta name="description" content="Harshit Gadge, AI and data engineer. His projects as records on a turntable: pick one to read its liner notes, hear its song, and ask it a question that his RAG service answers from the project's own docs.">
 <meta property="og:title" content="Harshit Gadge · the booth">
-<meta property="og:description" content="Seven projects, seven records. Pick one, read the liner notes, and ask it a question.">
+<meta property="og:description" content="Eight projects, eight records. Pick one, read the liner notes, and ask it a question.">
 <link rel="canonical" href="https://harshitgadge.github.io/">
 <meta name="color-scheme" content="dark light">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23111'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f472b6'/%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%23111'/%3E%3C/svg%3E">
@@ -101,7 +101,7 @@ h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;letter-spacing:-1.2px;margi
 .crate-h h3{margin:0;font-size:15px;font-family:var(--mono);color:var(--muted);font-weight:600}
 .crate-h small{color:var(--dim);font-size:12px;font-family:var(--mono)}
 @media (max-width:760px){.crate-h small{display:none}}
-.crate{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+.crate{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
 @media (max-width:760px){.crate{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px}
   .crate li{flex:0 0 42%;scroll-snap-align:start}}
 .sleeve{display:block;width:100%;aspect-ratio:1;border-radius:6px;border:1px solid var(--line2);cursor:pointer;padding:0;position:relative;overflow:hidden;
@@ -293,6 +293,10 @@ const RECORDS = [
     metric:'+0.196', label:'nDCG@10, dense over BM25 on ArguAna, 95% CI +0.177 to +0.215',
     stack:['Python stdlib','BEIR','pytrec_eval checks','CI gate'],
     extra:{ href:'leaderboard/', text:'See the leaderboard' } },
+  { slug:'grounded-policy-assistant', kicker:'Agentic RAG · regulation', c:'#fb923c', art:'pillars',
+    what:'A LangGraph agent answers questions on four CFPB regulations only from their text, citing the paragraph behind every claim, or refuses.',
+    metric:'80%', label:'of in-scope questions right with a free model, and 92% of out-of-scope ones refused',
+    stack:['LangGraph','Qdrant','eCFR','RAGBench'] },
 ];
 
 // Original sleeve art: one pattern per record, drawn from its colour.
@@ -305,6 +309,7 @@ function art(kind, c){
     case 'dots': return `radial-gradient(circle, ${c} 0 3.5px, transparent 4px) 0 0/16px 16px, ${d}`;
     case 'burst': return `repeating-conic-gradient(from 0deg at 30% 70%, ${c} 0 6deg, ${d} 6deg 18deg)`;
     case 'bars': return `linear-gradient(0deg, ${c} 0 2px, transparent 2px) 0 0/22px 22px, repeating-linear-gradient(90deg, ${d} 0 6px, ${c}77 6px 12px, ${d} 12px 22px)`;
+    case 'pillars': return `repeating-linear-gradient(90deg, ${c} 0 5px, transparent 5px 18px), linear-gradient(0deg, ${d} 0 12%, ${c}55 12% 16%, ${d} 16%)`;
     case 'grid': return `linear-gradient(${c} 0 2px, transparent 2px) 0 0/20px 20px, linear-gradient(90deg, ${c} 0 2px, transparent 2px) 0 0/20px 20px, linear-gradient(45deg, ${d}, ${c}55)`;
   }
 }
@@ -371,6 +376,7 @@ const SONGS = [
   { id:'4w9B0Sz0pZIrkjT9qYpre6', rec:'payments-data-platform', title:'Body Talk', by:'Dimitri Vegas & Like Mike, MOGUAI, Julian Perretta' },
   { id:'50yPAveJ176wLk73SsyV3g', rec:'fraud-screening', title:'LIGHTS GO OUT', by:'John Summit' },
   { id:'03auLpFLdCv4HozP4pQseu', rec:'ragbench', title:'ATM', by:'Don Toliver' },
+  { id:'5ITV0zqzjOYfFWpW0xBmRa', rec:'grounded-policy-assistant', title:'Show Me Love', by:'WizTheMc, bees & honey' },
 ];
 const songFor = r => SONGS.find(s => s.rec === r.slug);
 
